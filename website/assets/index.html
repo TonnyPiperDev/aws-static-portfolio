@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tonny Piper — AWS Solutions &amp; Security Architect</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    /* ── Tokens ── */
+    :root {
+      --obsidian: #0D0D0D;
+      --obsidian-2: #141414;
+      --obsidian-3: #1a1a1a;
+      --gold: #C9A84C;
+      --gold-light: #e0bf7a;
+      --gold-dim: rgba(201,168,76,0.12);
+      --gold-border: rgba(201,168,76,0.25);
+      --white: #F5F0E8;
+      --muted: rgba(245,240,232,0.55);
+      --grey: #555;
+      --violet: #7C5CBF;
+      --red: #C0392B;
+      --blue: #2980B9;
+      --radius: 2px;
+      --transition: 0.25s ease;
+    }
+    [data-theme="light"] {
+      --obsidian: #F5F0E8;
+      --obsidian-2: #EDE8DE;
+      --obsidian-3: #E4DED2;
+      --white: #0D0D0D;
+      --muted: rgba(13,13,13,0.55);
+      --grey: #999;
+      --gold-dim: rgba(201,168,76,0.1);
+      --gold-border: rgba(201,168,76,0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--obsidian);
+      color: var(--white);
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      line-height: 1.7;
+      cursor: none;
+      transition: background var(--transition), color var(--transition);
+      overflow-x: hidden;
+    }
+    @media (hover: hover) {
+      body, a, button { cursor: none; }
+    }
+
+    /* ── Cursor ── */
+    .cursor {
+      position: fixed; width: 8px; height: 8px;
+      background: var(--gold); border-radius: 50%;
+      pointer-events: none; z-index: 9999;
+      transform: translate(-50%,-50%);
+      transition: width .15s, height .15s;
+    }
+    .cursor-ring {
+      position: fixed; width: 32px; height: 32px;
+      border: 1px solid var(--gold-border); border-radius: 50%;
+      pointer-events: none; z-index: 9998;
+      transform: translate(-50%,-50%);
+    }
+
+    /* ── Noise ── */
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* ── Nav ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.4rem 3rem;
+      background: linear-gradient(to bottom, var(--obsidian) 60%, transparent);
+      transition: background var(--transition);
+    }
+    .nav-logo {
+      display: flex; align-items: center; gap: 0.75rem;
+      text-decoration: none; cursor: none;
+    }
+    .nav-logo svg { width: 36px; height: 36px; flex-shrink: 0; }
+    .nav-logo-text {
+      display: flex; flex-direction: column; justify-content: center;
+      gap: 0.06rem; overflow: hidden;
+    }
+    .nav-logo-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem; font-weight: 400;
+      color: var(--white); letter-spacing: 0.05em;
+      line-height: 1.15; white-space: nowrap;
+    }
+    .nav-logo-slogan {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.52rem; font-weight: 400;
+      color: var(--gold); letter-spacing: 0.14em;
+      text-transform: uppercase; line-height: 1.1;
+      white-space: nowrap; overflow: hidden;
+      text-overflow: ellipsis;
+      /* Slogan is visually constrained to name width by the flex container */
+      max-width: 100%;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 2.2rem;
+      list-style: none;
+    }
+    .nav-links a {
+      text-decoration: none; color: var(--muted);
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.13em; text-transform: uppercase;
+      transition: color var(--transition); cursor: none;
+      line-height: 1;
+    }
+    .nav-links a:hover { color: var(--gold); }
+    .nav-controls {
+      display: flex; align-items: center; gap: 1.2rem;
+      margin-left: 2rem;
+    }
+    .lang-switcher { display: flex; align-items: center; gap: 0.3rem; }
+    .lang-btn {
+      background: none;
+      border: 1px solid var(--gold-border);
+      cursor: none;
+      font-family: 'DM Sans', sans-serif; font-size: 0.62rem;
+      font-weight: 500; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--grey);
+      padding: 0.3rem 0.55rem;
+      transition: all var(--transition);
+      border-radius: 2px;
+      line-height: 1;
+    }
+    .lang-btn.active {
+      color: var(--obsidian); background: var(--gold);
+      border-color: var(--gold);
+    }
+    .lang-btn:hover:not(.active) { color: var(--gold); border-color: var(--gold); }
+    .lang-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .theme-toggle {
+      background: none; border: 1px solid var(--gold-border);
+      width: 30px; height: 30px; border-radius: 50%; cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); transition: all var(--transition);
+      flex-shrink: 0;
+    }
+    .theme-toggle:hover { background: var(--gold-dim); }
+    .theme-toggle svg { width: 13px; height: 13px; }
+    .icon-moon { display: block; }
+    .icon-sun  { display: none; }
+    [data-theme="light"] .icon-moon { display: none; }
+    [data-theme="light"] .icon-sun  { display: block; }
+
+    /* Hamburger */
+    .hamburger {
+      display: none; flex-direction: column; gap: 5px;
+      background: none; border: none; cursor: none; padding: 4px;
+    }
+    .hamburger span {
+      display: block; width: 22px; height: 1px;
+      background: var(--gold); transition: all 0.3s ease;
+    }
+    .hamburger.open span:nth-child(1) { transform: translateY(6px) rotate(45deg); }
+    .hamburger.open span:nth-child(2) { opacity: 0; }
+    .hamburger.open span:nth-child(3) { transform: translateY(-6px) rotate(-45deg); }
+
+    /* Mobile drawer */
+    .mobile-drawer {
+      display: none; position: fixed; inset: 0; z-index: 190;
+      background: var(--obsidian); flex-direction: column;
+      align-items: center; justify-content: center; gap: 2.5rem;
+    }
+    .mobile-drawer.open { display: flex; }
+    .mobile-drawer a {
+      text-decoration: none; color: var(--white);
+      font-family: 'Playfair Display', serif; font-size: 2rem;
+      transition: color var(--transition); cursor: none;
+    }
+    .mobile-drawer a:hover { color: var(--gold); }
+
+    /* ── Sections ── */
+    section { position: relative; z-index: 1; }
+
+    /* ── Hero ── */
+    #hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 8rem 2rem 4rem;
+    }
+    #hero::after {
+      content: ''; position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 600px; height: 600px;
+      background: radial-gradient(ellipse, rgba(201,168,76,0.07) 0%, transparent 68%);
+      pointer-events: none;
+    }
+    .hero-monogram {
+      width: 72px; height: 72px; margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards;
+    }
+    .hero-monogram svg { width: 100%; height: 100%; }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 7vw, 6rem);
+      font-weight: 400; line-height: 1.05;
+      opacity: 0; animation: fadeUp 0.9s ease 0.35s forwards;
+    }
+    .hero-title em { font-style: italic; color: var(--gold); }
+    .hero-sub {
+      margin-top: 1.4rem;
+      font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.22em; text-transform: uppercase;
+      color: var(--muted);
+      opacity: 0; animation: fadeUp 0.9s ease 0.5s forwards;
+    }
+    .hero-desc {
+      margin-top: 1.8rem; max-width: 500px;
+      font-size: 0.97rem; line-height: 1.85; color: var(--muted);
+      opacity: 0; animation: fadeUp 0.9s ease 0.65s forwards;
+    }
+    .hero-cta {
+      margin-top: 2.8rem; display: flex; gap: 1rem; flex-wrap: wrap; justify-content: center;
+      opacity: 0; animation: fadeUp 0.9s ease 0.8s forwards;
+    }
+    .btn-primary {
+      padding: 0.75rem 2rem; background: var(--gold); color: var(--obsidian);
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none;
+      border: none; cursor: none; transition: all var(--transition);
+    }
+    .btn-primary:hover { background: var(--gold-light); }
+    .btn-ghost {
+      padding: 0.75rem 2rem; background: transparent;
+      border: 1px solid var(--gold-border); color: var(--white);
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 500;
+      letter-spacing: 0.15em; text-transform: uppercase; text-decoration: none;
+      cursor: none; transition: all var(--transition);
+    }
+    .btn-ghost:hover { border-color: var(--gold); color: var(--gold); }
+    .scroll-hint {
+      margin-top: 4rem; display: flex; flex-direction: column; align-items: center; gap: 0.5rem;
+      color: var(--gold-border); font-size: 0.65rem; letter-spacing: 0.2em; text-transform: uppercase;
+      opacity: 0; animation: fadeIn 1s ease 1.2s forwards;
+    }
+    .scroll-hint::after {
+      content: ''; display: block; width: 1px; height: 40px;
+      background: linear-gradient(to bottom, var(--gold-border), transparent);
+    }
+
+    /* ── Section shared ── */
+    .section-inner { max-width: 1100px; margin: 0 auto; padding: 6rem 2rem; }
+    .section-label {
+      font-size: 0.65rem; font-weight: 500; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold); margin-bottom: 1rem;
+    }
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      font-weight: 400; line-height: 1.2;
+    }
+    .section-title em { font-style: italic; color: var(--gold); }
+    .section-divider {
+      width: 40px; height: 1px; background: var(--gold);
+      margin: 1.5rem 0;
+    }
+
+    /* ── About ── */
+    #about .about-grid {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 5rem;
+      align-items: start; margin-top: 3rem;
+    }
+    .about-text p { color: var(--muted); margin-bottom: 1.2rem; font-size: 0.97rem; }
+    .about-text p strong { color: var(--white); font-weight: 500; }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem;
+    }
+    .stat-card {
+      padding: 1.5rem; border: 1px solid var(--gold-border);
+      background: var(--gold-dim); position: relative; overflow: hidden;
+    }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0;
+      width: 2px; height: 100%; background: var(--gold);
+    }
+    .stat-number {
+      font-family: 'Playfair Display', serif; font-size: 2.2rem;
+      font-weight: 400; color: var(--gold); line-height: 1;
+    }
+    .stat-label {
+      font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--muted); margin-top: 0.4rem;
+    }
+
+    /* ── Services ── */
+    #services { background: var(--obsidian-2); }
+    .services-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5px;
+      margin-top: 3rem; background: var(--gold-border);
+    }
+    .service-card {
+      background: var(--obsidian-2); padding: 2.5rem 2rem;
+      transition: background var(--transition);
+    }
+    .service-card:hover { background: var(--obsidian-3); }
+    .service-icon {
+      width: 36px; height: 36px; margin-bottom: 1.5rem;
+      color: var(--gold);
+    }
+    .service-icon svg { width: 100%; height: 100%; }
+    .service-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.15rem; font-weight: 400; margin-bottom: 0.8rem;
+    }
+    .service-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.75; }
+    .service-tags { margin-top: 1.2rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+    .tag {
+      padding: 0.2rem 0.65rem; border: 1px solid var(--gold-border);
+      font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase;
+      color: var(--gold); background: var(--gold-dim);
+    }
+
+    /* ── Projects ── */
+    .projects-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-top: 3rem; }
+    .project-card {
+      border: 1px solid var(--gold-border); padding: 2rem;
+      background: var(--gold-dim); position: relative; overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .project-card:hover { border-color: var(--gold); }
+    .project-number {
+      font-family: 'Playfair Display', serif; font-size: 3.5rem;
+      font-weight: 400; color: rgba(201,168,76,0.08); position: absolute;
+      top: 1rem; right: 1.5rem; line-height: 1;
+    }
+    .project-status {
+      display: inline-block; padding: 0.15rem 0.6rem;
+      font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+      margin-bottom: 1rem;
+    }
+    .status-complete { border: 1px solid rgba(46,204,113,0.4); color: #2ecc71; background: rgba(46,204,113,0.08); }
+    .status-active { border: 1px solid var(--gold-border); color: var(--gold); background: var(--gold-dim); }
+    .status-planned { border: 1px solid var(--grey); color: var(--grey); background: transparent; }
+    .project-name {
+      font-family: 'Playfair Display', serif; font-size: 1.25rem;
+      font-weight: 400; margin-bottom: 0.6rem;
+    }
+    .project-desc { font-size: 0.88rem; color: var(--muted); line-height: 1.7; }
+    .project-tech { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 0.4rem; }
+
+    /* ── Certifications ── */
+    #certifications { background: var(--obsidian-2); }
+    .certs-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; margin-top: 3rem; }
+    .cert-card {
+      padding: 1.5rem; border: 1px solid var(--gold-border);
+      position: relative; overflow: hidden;
+      transition: border-color var(--transition);
+    }
+    .cert-card.earned { background: var(--gold-dim); border-color: var(--gold); }
+    .cert-card.planned { background: transparent; opacity: 0.5; }
+    .cert-card.in-progress { background: rgba(201,168,76,0.05); }
+    .cert-badge {
+      width: 32px; height: 32px; margin-bottom: 1rem;
+      background: var(--gold-dim); border: 1px solid var(--gold-border);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em;
+      color: var(--gold);
+    }
+    .cert-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.3rem; }
+    .cert-issuer { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
+    .cert-status-dot {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      width: 6px; height: 6px; border-radius: 50%;
+    }
+    .cert-card.earned .cert-status-dot { background: #2ecc71; }
+    .cert-card.in-progress .cert-status-dot { background: var(--gold); }
+    .cert-card.planned .cert-status-dot { background: var(--grey); }
+
+    /* ── Testimonials carousel ── */
+    .testimonials-carousel { position: relative; margin-top: 3rem; overflow: hidden; }
+    .testimonials-track {
+      display: flex; transition: transform 0.5s ease;
+    }
+    .testimonial-card {
+      min-width: 100%; padding: 2.5rem 3rem;
+      border: 1px solid var(--gold-border); background: var(--gold-dim);
+      position: relative; box-sizing: border-box;
+    }
+    .testimonial-card::before {
+      content: '\201C';
+      font-family: 'Playfair Display', serif; font-size: 5rem;
+      color: rgba(201,168,76,0.12); position: absolute;
+      top: 0.5rem; left: 1.5rem; line-height: 1; pointer-events: none;
+    }
+    .testimonial-text { font-size: 1rem; color: var(--muted); line-height: 1.85; font-style: italic; max-width: 700px; }
+    .testimonial-author { margin-top: 1.5rem; }
+    .testimonial-name { font-size: 0.85rem; font-weight: 500; color: var(--white); }
+    .testimonial-role { font-size: 0.72rem; color: var(--gold); letter-spacing: 0.06em; margin-top: 0.2rem; }
+    .carousel-controls {
+      display: flex; align-items: center; justify-content: space-between;
+      margin-top: 1.5rem;
+    }
+    .carousel-dots { display: flex; gap: 0.5rem; }
+    .carousel-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: var(--gold-border); border: none; cursor: none;
+      transition: background var(--transition), transform var(--transition);
+      padding: 0;
+    }
+    .carousel-dot.active { background: var(--gold); transform: scale(1.3); }
+    .carousel-arrows { display: flex; gap: 0.6rem; }
+    .carousel-arrow {
+      width: 36px; height: 36px; border: 1px solid var(--gold-border);
+      background: none; color: var(--gold); cursor: none;
+      display: flex; align-items: center; justify-content: center;
+      transition: all var(--transition); border-radius: 2px;
+    }
+    .carousel-arrow:hover { background: var(--gold-dim); border-color: var(--gold); }
+    .carousel-arrow svg { width: 14px; height: 14px; pointer-events: none; }
+
+    /* ── Contact ── */
+    #contact { background: var(--obsidian-2); }
+    .contact-grid { display: grid; grid-template-columns: 1fr 1.4fr; gap: 5rem; margin-top: 3rem; }
+    .contact-info p { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+    .contact-detail { display: flex; align-items: center; gap: 0.8rem; margin-bottom: 1rem; }
+    .contact-detail svg { width: 14px; height: 14px; color: var(--gold); flex-shrink: 0; }
+    .contact-detail span { font-size: 0.85rem; color: var(--muted); }
+    .contact-form { display: flex; flex-direction: column; gap: 1rem; }
+    .form-group { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-group label {
+      font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--gold);
+    }
+    .form-group input, .form-group textarea {
+      background: var(--obsidian); border: 1px solid var(--gold-border);
+      color: var(--white); font-family: 'DM Sans', sans-serif; font-size: 0.9rem;
+      padding: 0.75rem 1rem; outline: none; cursor: none;
+      transition: border-color var(--transition);
+    }
+    .form-group input:focus, .form-group textarea:focus { border-color: var(--gold); }
+    .form-group textarea { resize: vertical; min-height: 120px; }
+    .form-submit {
+      align-self: flex-start; padding: 0.75rem 2.5rem;
+      background: var(--gold); color: var(--obsidian);
+      font-family: 'DM Sans', sans-serif; font-size: 0.75rem; font-weight: 600;
+      letter-spacing: 0.15em; text-transform: uppercase; border: none; cursor: none;
+      transition: background var(--transition);
+    }
+    .form-submit:hover { background: var(--gold-light); }
+
+    /* ── Footer ── */
+    footer {
+      padding: 2.5rem 3rem; display: flex;
+      align-items: center; justify-content: space-between;
+      border-top: 1px solid var(--gold-border);
+    }
+    .footer-copy { font-size: 0.72rem; color: var(--grey); letter-spacing: 0.05em; }
+    .footer-links { display: flex; gap: 1.5rem; }
+    .footer-links a {
+      text-decoration: none; color: var(--grey);
+      font-size: 0.72rem; letter-spacing: 0.08em;
+      transition: color var(--transition); cursor: none;
+    }
+    .footer-links a:hover { color: var(--gold); }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 1; transform: none; }
+    .js-reveal .reveal { opacity: 0; transform: translateY(24px); transition: opacity 0.7s ease, transform 0.7s ease; }
+    .js-reveal .reveal.visible { opacity: 1; transform: none; }
+
+    /* ── Animations ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+      #about .about-grid { grid-template-columns: 1fr; gap: 2rem; }
+      .services-grid { grid-template-columns: 1fr; }
+      .projects-grid { grid-template-columns: 1fr; }
+      .certs-grid { grid-template-columns: 1fr 1fr; }      .testimonials-grid { grid-template-columns: 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 2rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+    @media (max-width: 480px) {
+      .certs-grid { grid-template-columns: 1fr; }
+      .about-stats { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- NAV -->
+  <nav>
+    <a href="#hero" class="nav-logo" aria-label="Tonny Piper — Home">
+      <svg viewBox="0 0 36 36" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <polygon points="18,1 35,18 18,35 1,18" fill="none" stroke="#C9A84C" stroke-width="1"/>
+        <polygon points="18,7 29,18 18,29 7,18" fill="rgba(201,168,76,0.07)" stroke="rgba(201,168,76,0.2)" stroke-width="0.5"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Playfair Display,serif" font-size="9" fill="#C9A84C" letter-spacing="0.5">TP</text>
+      </svg>
+      <div class="nav-logo-text">
+        <span class="nav-logo-name">Tonny Piper</span>
+        <span class="nav-logo-slogan">Your slogan here</span><!-- REPLACE WITH REAL SLOGAN -->
+      </div>
+    </a>
+    <ul class="nav-links" id="navLinks">
+      <li><a href="#about" data-i18n="nav_about">About</a></li>
+      <li><a href="#services" data-i18n="nav_services">Services</a></li>
+      <li><a href="#projects" data-i18n="nav_projects">Projects</a></li>
+      <li><a href="#certifications" data-i18n="nav_certs">Certifications</a></li>
+      <li><a href="#contact" data-i18n="nav_contact">Contact</a></li>
+    </ul>
+    <div class="nav-controls">
+      <div class="lang-switcher" role="group" aria-label="Select language">
+        <button class="lang-btn active" onclick="setLang('en')" aria-pressed="true"  aria-label="English">EN</button>
+        <button class="lang-btn"        onclick="setLang('fr')" aria-pressed="false" aria-label="Français">FR</button>
+        <button class="lang-btn"        onclick="setLang('de')" aria-pressed="false" aria-label="Deutsch">DE</button>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <circle cx="12" cy="12" r="5"/>
+          <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+          <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+        </svg>
+      </button>
+      <button class="hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- MOBILE DRAWER -->
+  <div class="mobile-drawer" id="mobileDrawer">
+    <a href="#about" onclick="closeDrawer()" data-i18n="nav_about">About</a>
+    <a href="#services" onclick="closeDrawer()" data-i18n="nav_services">Services</a>
+    <a href="#projects" onclick="closeDrawer()" data-i18n="nav_projects">Projects</a>
+    <a href="#certifications" onclick="closeDrawer()" data-i18n="nav_certs">Certifications</a>
+    <a href="#contact" onclick="closeDrawer()" data-i18n="nav_contact">Contact</a>
+  </div>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="hero-monogram">
+      <svg viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="36,2 70,36 36,70 2,36" fill="none" stroke="#C9A84C" stroke-width="1.2"/>
+        <polygon points="36,12 60,36 36,60 12,36" fill="rgba(201,168,76,0.06)" stroke="rgba(201,168,76,0.2)" stroke-width="0.6"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Playfair Display,serif" font-size="18" fill="#C9A84C" letter-spacing="1.5">TP</text>
+      </svg>
+    </div>
+    <h1 class="hero-title" data-i18n="hero_title">AWS Solutions &amp; <em>Security</em> Architect</h1>
+    <p class="hero-sub" data-i18n="hero_sub">Frankfurt · DACH · Worldwide · Available for Freelance</p>
+    <p class="hero-desc" data-i18n="hero_desc">I design and secure cloud infrastructure on AWS — from serverless APIs to enterprise-grade security layers. Based in Frankfurt, serving clients across the DACH region and worldwide.</p>
+    <div class="hero-cta">
+      <a href="#contact" class="btn-primary" data-i18n="hero_cta_primary">Get in Touch</a>
+      <a href="#projects" class="btn-ghost" data-i18n="hero_cta_secondary">View Projects</a>
+    </div>
+    <div class="scroll-hint" data-i18n="scroll_hint">Scroll</div>
+  </section>
+
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="about_label">About</p>
+      <h2 class="section-title reveal" data-i18n="about_title">Architect by <em>discipline</em>,<br>developer by origin</h2>
+      <div class="section-divider reveal"></div>
+      <div class="about-grid">
+        <div class="about-text reveal">
+          <p data-i18n="about_p1">I'm <strong>Tonny Piper</strong>, a freelance AWS Solutions & Security Architect based in Frankfurt, Germany. My background is in software development — Java and JavaScript — which gives me an unusual combination of architectural vision and hands-on engineering depth.</p>
+          <p data-i18n="about_p2">I work primarily with Mittelstand companies and financial sector clients in the DACH region, helping them design, build and secure modern cloud infrastructure on AWS.</p>
+          <p data-i18n="about_p3">My approach is CLI-first, infrastructure-as-code, and security by design. I build systems that are observable, auditable, and built to last.</p>
+        </div>
+        <div class="about-stats reveal">
+          <div class="stat-card">
+            <div class="stat-number">7</div>
+            <div class="stat-label" data-i18n="stat_projects">AWS Projects</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">5+</div>
+            <div class="stat-label" data-i18n="stat_certs">Certifications</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">DACH</div>
+            <div class="stat-label" data-i18n="stat_region">Focus Region</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-number">CLI</div>
+            <div class="stat-label" data-i18n="stat_approach">First Approach</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section id="services">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="services_label">Services</p>
+      <h2 class="section-title reveal" data-i18n="services_title">What I <em>offer</em></h2>
+      <div class="section-divider reveal"></div>
+      <div class="services-grid reveal">
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3 class="service-name" data-i18n="svc1_name">Solutions Architecture</h3>
+          <p class="service-desc" data-i18n="svc1_desc">Designing scalable, cost-efficient AWS architectures for web applications, APIs, and data pipelines. From whiteboard to production.</p>
+          <div class="service-tags">
+            <span class="tag">API Gateway</span><span class="tag">Lambda</span><span class="tag">DynamoDB</span><span class="tag">CloudFront</span>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <h3 class="service-name" data-i18n="svc2_name">Security & Compliance</h3>
+          <p class="service-desc" data-i18n="svc2_desc">Implementing security layers, threat detection, audit trails, and compliance frameworks on AWS infrastructure.</p>
+          <div class="service-tags">
+            <span class="tag">GuardDuty</span><span class="tag">CloudTrail</span><span class="tag">Security Hub</span><span class="tag">IAM</span>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </div>
+          <h3 class="service-name" data-i18n="svc3_name">Infrastructure as Code</h3>
+          <p class="service-desc" data-i18n="svc3_desc">Provisioning and managing cloud infrastructure with Terraform and AWS CLI. Reproducible, auditable, version-controlled.</p>
+          <div class="service-tags">
+            <span class="tag">Terraform</span><span class="tag">AWS CLI</span><span class="tag">EC2</span><span class="tag">VPC</span>
+          </div>
+        </div>
+        <div class="service-card">
+          <div class="service-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm0 4a1 1 0 11-1 1 1 1 0 011-1zm-1 4h2v6h-2z"/>
+            </svg>
+          </div>
+          <h3 class="service-name" data-i18n="svc4_name">AI-Powered Backends</h3>
+          <p class="service-desc" data-i18n="svc4_desc">Building and integrating AI backends using Amazon Bedrock and Claude. Automating workflows, knowledge retrieval, and intelligent APIs.</p>
+          <div class="service-tags">
+            <span class="tag">Bedrock</span><span class="tag">Claude API</span><span class="tag">Lambda</span><span class="tag">Automation</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PROJECTS -->
+  <section id="projects">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="projects_label">Projects</p>
+      <h2 class="section-title reveal" data-i18n="projects_title">Built on <em>AWS</em></h2>
+      <div class="section-divider reveal"></div>
+      <div class="projects-grid">
+        <div class="project-card reveal">
+          <div class="project-number">01</div>
+          <span class="project-status status-complete" data-i18n="status_complete">Complete</span>
+          <h3 class="project-name" data-i18n="proj1_name">Serverless REST API</h3>
+          <p class="project-desc" data-i18n="proj1_desc">User management API with authentication, CRUD operations, and structured logging. Built with API Gateway, Lambda, and DynamoDB.</p>
+          <div class="project-tech"><span class="tag">API Gateway</span><span class="tag">Lambda</span><span class="tag">DynamoDB</span><span class="tag">IAM</span><span class="tag">CloudWatch</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">02</div>
+          <span class="project-status status-active" data-i18n="status_active">Active</span>
+          <h3 class="project-name" data-i18n="proj2_name">Portfolio Website</h3>
+          <p class="project-desc" data-i18n="proj2_desc">This site. Hosted on S3 with CloudFront CDN, custom domain via ACM certificate, and global edge delivery.</p>
+          <div class="project-tech"><span class="tag">S3</span><span class="tag">CloudFront</span><span class="tag">ACM</span><span class="tag">Route 53</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">03</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj3_name">CI/CD Pipeline</h3>
+          <p class="project-desc" data-i18n="proj3_desc">Automated build and deployment pipeline with GitHub Actions and AWS CodePipeline, CodeBuild integration.</p>
+          <div class="project-tech"><span class="tag">CodePipeline</span><span class="tag">CodeBuild</span><span class="tag">GitHub Actions</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">4.1</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj4a_name">Notification Pipeline · CLI</h3>
+          <p class="project-desc" data-i18n="proj4a_desc">Event-driven notification system built from scratch using the AWS CLI — EventBridge rules, SNS topics, SQS queues, Lambda triggers, and Secrets Manager integration.</p>
+          <div class="project-tech"><span class="tag">EventBridge</span><span class="tag">SNS</span><span class="tag">SQS</span><span class="tag">Lambda</span><span class="tag">Secrets Manager</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">4.2</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj4b_name">Notification Pipeline · Terraform</h3>
+          <p class="project-desc" data-i18n="proj4b_desc">The same infrastructure fully reprovisioned as Terraform code. Reproducible, version-controlled, and IaC-ready — the same system, a different discipline.</p>
+          <div class="project-tech"><span class="tag">Terraform</span><span class="tag">EventBridge</span><span class="tag">SNS</span><span class="tag">SQS</span><span class="tag">Lambda</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">05</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj5_name">Terraform IaC Infrastructure</h3>
+          <p class="project-desc" data-i18n="proj5_desc">Full infrastructure provisioning with Terraform — VPC, EC2, RDS, security groups, and IAM roles defined as code.</p>
+          <div class="project-tech"><span class="tag">Terraform</span><span class="tag">EC2</span><span class="tag">VPC</span><span class="tag">RDS</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">06</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj6_name">AI Chatbot Backend</h3>
+          <p class="project-desc" data-i18n="proj6_desc">Serverless AI backend powered by Amazon Bedrock, exposed via API Gateway and Lambda with streaming support.</p>
+          <div class="project-tech"><span class="tag">Bedrock</span><span class="tag">Lambda</span><span class="tag">API Gateway</span></div>
+        </div>
+        <div class="project-card reveal">
+          <div class="project-number">07</div>
+          <span class="project-status status-planned" data-i18n="status_planned">Planned</span>
+          <h3 class="project-name" data-i18n="proj7_name">Security & Observability Layer</h3>
+          <p class="project-desc" data-i18n="proj7_desc">Enterprise-grade security and monitoring stack with threat detection, audit logging, and compliance dashboards.</p>
+          <div class="project-tech"><span class="tag">CloudTrail</span><span class="tag">GuardDuty</span><span class="tag">Security Hub</span><span class="tag">Config</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CERTIFICATIONS -->
+  <section id="certifications">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="certs_label">Certifications</p>
+      <h2 class="section-title reveal" data-i18n="certs_title">Credentials &amp; <em>expertise</em></h2>
+      <div class="section-divider reveal"></div>
+      <div class="certs-grid reveal">
+        <div class="cert-card earned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AWS</div>
+          <div class="cert-name">Cloud Practitioner</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
+        <div class="cert-card earned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AWS</div>
+          <div class="cert-name">AI Practitioner</div>
+          <div class="cert-issuer">Amazon Web Services</div>
+        </div>
+        <div class="cert-card in-progress">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AWS</div>
+          <div class="cert-name">Solutions Architect Associate</div>
+          <div class="cert-issuer">Amazon Web Services · In Progress</div>
+        </div>
+        <div class="cert-card planned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">HCP</div>
+          <div class="cert-name">Terraform Associate</div>
+          <div class="cert-issuer">HashiCorp · Planned</div>
+        </div>
+        <div class="cert-card planned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AI</div>
+          <div class="cert-name">Claude AI Certification</div>
+          <div class="cert-issuer">Anthropic · Planned</div>
+        </div>
+        <div class="cert-card planned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">SEC</div>
+          <div class="cert-name">Security+</div>
+          <div class="cert-issuer">CompTIA · Planned</div>
+        </div>
+        <div class="cert-card planned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AWS</div>
+          <div class="cert-name">Solutions Architect Professional</div>
+          <div class="cert-issuer">Amazon Web Services · 2027</div>
+        </div>
+        <div class="cert-card planned">
+          <div class="cert-status-dot"></div>
+          <div class="cert-badge">AWS</div>
+          <div class="cert-name">Security Specialty</div>
+          <div class="cert-issuer">Amazon Web Services · 2027</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section id="testimonials">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="testimonials_label">Testimonials</p>
+      <h2 class="section-title reveal" data-i18n="testimonials_title">What clients <em>say</em></h2>
+      <div class="section-divider reveal"></div>
+      <div class="testimonials-carousel reveal" aria-label="Testimonials carousel">
+        <div class="testimonials-track" id="testimonialsTrack">
+          <div class="testimonial-card" role="group" aria-label="Testimonial 1 of 3">
+            <p class="testimonial-text" data-i18n="t1_text">Tonny brought a level of architectural clarity we hadn't seen before. The AWS setup was clean, secure, and exactly what we needed.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-name" data-i18n="t1_name">— Client Name</div>
+              <div class="testimonial-role" data-i18n="t1_role">CTO, Mittelstand Company</div>
+            </div>
+          </div>
+          <div class="testimonial-card" role="group" aria-label="Testimonial 2 of 3">
+            <p class="testimonial-text" data-i18n="t2_text">Working with Tonny was a pleasure. He explained every decision, documented everything, and delivered ahead of schedule.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-name" data-i18n="t2_name">— Client Name</div>
+              <div class="testimonial-role" data-i18n="t2_role">Engineering Lead, Frankfurt</div>
+            </div>
+          </div>
+          <div class="testimonial-card" role="group" aria-label="Testimonial 3 of 3">
+            <p class="testimonial-text" data-i18n="t3_text">Our security posture improved dramatically after Tonny's engagement. GuardDuty findings dropped 80% in the first month.</p>
+            <div class="testimonial-author">
+              <div class="testimonial-name" data-i18n="t3_name">— Client Name</div>
+              <div class="testimonial-role" data-i18n="t3_role">Head of IT, Financial Sector</div>
+            </div>
+          </div>
+        </div>
+        <div class="carousel-controls">
+          <div class="carousel-dots" id="carouselDots">
+            <button class="carousel-dot active" onclick="goToSlide(0)" aria-label="Testimonial 1"></button>
+            <button class="carousel-dot" onclick="goToSlide(1)" aria-label="Testimonial 2"></button>
+            <button class="carousel-dot" onclick="goToSlide(2)" aria-label="Testimonial 3"></button>
+          </div>
+          <div class="carousel-arrows">
+            <button class="carousel-arrow" onclick="prevSlide()" aria-label="Previous testimonial">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+            </button>
+            <button class="carousel-arrow" onclick="nextSlide()" aria-label="Next testimonial">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="section-inner">
+      <p class="section-label reveal" data-i18n="contact_label">Contact</p>
+      <h2 class="section-title reveal" data-i18n="contact_title">Let's <em>work</em> together</h2>
+      <div class="section-divider reveal"></div>
+      <div class="contact-grid">
+        <div class="reveal">
+          <p data-i18n="contact_desc">Available for freelance engagements in the DACH region. Specialising in AWS architecture, security, and infrastructure for Mittelstand and financial sector clients.</p>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            <span><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="ddb5b8b1b1b29da9b2b3b3a4adb4adb8aff3b9b8ab">[email&#160;protected]</a></span>
+          </div>
+          <div class="contact-detail">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            <span>Frankfurt am Main, Germany</span>
+          </div>
+        </div>
+        <div class="contact-form reveal" data-form="contact">
+          <div class="form-group">
+            <label data-i18n="form_name">Name</label>
+            <input type="text" placeholder="Your name" data-i18n-placeholder="form_name_ph"/>
+          </div>
+          <div class="form-group">
+            <label data-i18n="form_email">Email</label>
+            <input type="email" placeholder="your@email.com"/>
+          </div>
+          <div class="form-group">
+            <label data-i18n="form_message">Message</label>
+            <textarea placeholder="Tell me about your project..." data-i18n-placeholder="form_msg_ph"></textarea>
+          </div>
+          <button class="form-submit" data-i18n="form_submit">Send Message</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <span class="footer-copy">© 2026 Tonny Piper · tonnypiper.dev</span>
+    <div class="footer-links">
+      <a href="https://www.linkedin.com/in/tonny-piper/" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://github.com/TonnyPiperDev" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </footer>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    // ── Cursor ──
+    const cursor = document.getElementById('cursor');
+    const ring   = document.getElementById('cursorRing');
+    let mx=0,my=0,rx=0,ry=0;
+    document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+    (function anim(){ cursor.style.left=mx+'px'; cursor.style.top=my+'px'; rx+=(mx-rx)*.12; ry+=(my-ry)*.12; ring.style.left=rx+'px'; ring.style.top=ry+'px'; requestAnimationFrame(anim); })();
+
+    // ── Theme ──
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      const isLight = document.body.dataset.theme === 'light';
+      document.body.dataset.theme = isLight ? '' : 'light';
+      toggle.setAttribute('aria-label', isLight ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+
+    // ── Carousel ──
+    let currentSlide = 0;
+    const totalSlides = 3;
+    function goToSlide(n) {
+      currentSlide = n;
+      document.getElementById('testimonialsTrack').style.transform = `translateX(-${n * 100}%)`;
+      document.querySelectorAll('.carousel-dot').forEach((d, i) => d.classList.toggle('active', i === n));
+    }
+    function nextSlide() { goToSlide((currentSlide + 1) % totalSlides); }
+    function prevSlide() { goToSlide((currentSlide - 1 + totalSlides) % totalSlides); }
+    // Auto-advance every 6s
+    setInterval(nextSlide, 6000);
+
+    // ── Hamburger ──
+    const hamburger = document.getElementById('hamburger');
+    const drawer    = document.getElementById('mobileDrawer');
+    hamburger.addEventListener('click', () => {
+      hamburger.classList.toggle('open');
+      drawer.classList.toggle('open');
+    });
+    function closeDrawer() { hamburger.classList.remove('open'); drawer.classList.remove('open'); }
+
+    // ── Scroll reveal ──
+    document.body.classList.add('js-reveal');
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer  = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }});
+    }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+    requestAnimationFrame(() => {
+      revealEls.forEach(el => observer.observe(el));
+    });
+
+    // ── i18n ──
+    const translations = {
+      en: {
+        nav_about:'About', nav_services:'Services', nav_projects:'Projects', nav_certs:'Certifications', nav_contact:'Contact',
+        hero_title:'AWS Solutions & <em>Security</em> Architect',
+        hero_sub:'Frankfurt · DACH · Worldwide · Available for Freelance',
+        hero_desc:'I design and secure cloud infrastructure on AWS — from serverless APIs to enterprise-grade security layers. Based in Frankfurt, serving clients across the DACH region and worldwide.',
+        hero_cta_primary:'Get in Touch', hero_cta_secondary:'View Projects', scroll_hint:'Scroll',
+        about_label:'About', about_title:'Architect by <em>discipline</em>,<br>developer by origin',
+        about_p1:'I\'m <strong>Tonny Piper</strong>, a freelance AWS Solutions & Security Architect based in Frankfurt, Germany. My background is in software development — Java and JavaScript — which gives me an unusual combination of architectural vision and hands-on engineering depth.',
+        about_p2:'I work with Mittelstand companies and financial sector clients across the DACH region and worldwide, helping them design, build, and secure modern cloud infrastructure on AWS.',
+        about_p3:'My approach is CLI-first, infrastructure-as-code, and security by design. I build systems that are observable, auditable, and built to last.',
+        stat_projects:'AWS Projects', stat_certs:'Certifications', stat_region:'Focus Region', stat_approach:'First Approach',
+        services_label:'Services', services_title:'What I <em>offer</em>',
+        svc1_name:'Solutions Architecture', svc1_desc:'Designing scalable, cost-efficient AWS architectures for web applications, APIs, and data pipelines. From whiteboard to production.',
+        svc2_name:'Security & Compliance', svc2_desc:'Implementing security layers, threat detection, audit trails, and compliance frameworks on AWS infrastructure.',
+        svc3_name:'Infrastructure as Code', svc3_desc:'Provisioning and managing cloud infrastructure with Terraform and AWS CLI. Reproducible, auditable, version-controlled.',
+        svc4_name:'AI-Powered Backends', svc4_desc:'Building and integrating AI backends using Amazon Bedrock and Claude. Automating workflows, knowledge retrieval, and intelligent APIs.',
+        projects_label:'Projects', projects_title:'Built on <em>AWS</em>',
+        status_complete:'Complete', status_active:'Active', status_planned:'Planned',
+        proj1_name:'Serverless REST API', proj1_desc:'User management API with authentication, CRUD operations, and structured logging.',
+        proj2_name:'Portfolio Website', proj2_desc:'This site. Hosted on S3 with CloudFront CDN, custom domain via ACM certificate.',
+        proj3_name:'CI/CD Pipeline', proj3_desc:'Automated build and deployment pipeline with GitHub Actions and AWS CodePipeline.',
+        proj4_name:'Event-Driven Notification Pipeline', proj4_desc:'A two-phase project bridging CLI fluency and Infrastructure as Code.',
+        proj4_phase1:'Built from scratch using the AWS CLI — EventBridge rules, SNS topics, SQS queues, Lambda triggers, and Secrets Manager integration.',
+        proj4_phase2:'The same infrastructure fully reprovisioned as Terraform code — reproducible, version-controlled, and IaC-ready.',
+        proj4a_name:'Notification Pipeline · CLI', proj4a_desc:'Event-driven notification system built from scratch using the AWS CLI — EventBridge rules, SNS topics, SQS queues, Lambda triggers, and Secrets Manager integration.',
+        proj4b_name:'Notification Pipeline · Terraform', proj4b_desc:'The same infrastructure fully reprovisioned as Terraform code. Reproducible, version-controlled, and IaC-ready — the same system, a different discipline.',
+        proj5_name:'Terraform IaC Infrastructure', proj5_desc:'Full infrastructure provisioning with Terraform — VPC, EC2, RDS, security groups.',
+        proj6_name:'AI Chatbot Backend', proj6_desc:'Serverless AI backend powered by Amazon Bedrock with streaming support.',
+        proj7_name:'Security & Observability Layer', proj7_desc:'Enterprise-grade security and monitoring stack with threat detection and audit logging.',
+        certs_label:'Certifications', certs_title:'Credentials & <em>expertise</em>',
+        testimonials_label:'Testimonials', testimonials_title:'What clients <em>say</em>',
+        t1_text:'Tonny brought a level of architectural clarity we hadn\'t seen before. The AWS setup was clean, secure, and exactly what we needed.',
+        t1_name:'— Client Name', t1_role:'CTO, Mittelstand Company',
+        t2_text:'Working with Tonny was a pleasure. He explained every decision, documented everything, and delivered ahead of schedule.',
+        t2_name:'— Client Name', t2_role:'Engineering Lead, Frankfurt',
+        t3_text:'Our security posture improved dramatically after Tonny\'s engagement. GuardDuty findings dropped 80% in the first month.',
+        t3_name:'— Client Name', t3_role:'Head of IT, Financial Sector',
+        contact_label:'Contact', contact_title:'Let\'s <em>work</em> together',
+        contact_desc:'Available for freelance engagements across the DACH region and worldwide. Specialising in AWS architecture, security, IaC, and AI-powered backends.',
+        form_name:'Name', form_email:'Email', form_message:'Message', form_submit:'Send Message',
+        form_name_ph:'Your name', form_msg_ph:'Tell me about your project...'
+      },
+      fr: {
+        nav_about:'À propos', nav_services:'Services', nav_projects:'Projets', nav_certs:'Certifications', nav_contact:'Contact',
+        hero_title:'Architecte AWS Solutions & <em>Sécurité</em>',
+        hero_sub:'Francfort · DACH · International · Disponible en Freelance',
+        hero_desc:'Je conçois et sécurise des infrastructures cloud AWS — des APIs serverless aux couches de sécurité enterprise. Basé à Francfort, au service de clients dans la région DACH et dans le monde entier.',
+        hero_cta_primary:'Me contacter', hero_cta_secondary:'Voir les projets', scroll_hint:'Défiler',
+        about_label:'À propos', about_title:'Architecte par <em>discipline</em>,<br>développeur par origine',
+        about_p1:'Je suis <strong>Tonny Piper</strong>, architecte AWS freelance basé à Francfort. Mon background en développement logiciel — Java et JavaScript — me donne une combinaison rare de vision architecturale et de profondeur technique.',
+        about_p2:'Je travaille avec des entreprises Mittelstand et des clients du secteur financier dans la région DACH et à l\'international.',
+        about_p3:'Mon approche est CLI-first, infrastructure-as-code, et sécurité by design.',
+        stat_projects:'Projets AWS', stat_certs:'Certifications', stat_region:'Région cible', stat_approach:'Approche',
+        services_label:'Services', services_title:'Ce que je <em>propose</em>',
+        svc1_name:'Architecture de solutions', svc1_desc:'Conception d\'architectures AWS évolutives et efficaces en coûts pour les applications web, les APIs et les pipelines de données.',
+        svc2_name:'Sécurité & Conformité', svc2_desc:'Mise en place de couches de sécurité, détection des menaces, pistes d\'audit et cadres de conformité sur AWS.',
+        svc3_name:'Infrastructure as Code', svc3_desc:'Provisionnement et gestion de l\'infrastructure cloud avec Terraform et AWS CLI. Reproductible, auditable, versionné.',
+        svc4_name:'Backends propulsés par l\'IA', svc4_desc:'Construction et intégration de backends IA avec Amazon Bedrock et Claude. Automatisation de workflows, récupération de connaissances et APIs intelligentes.',
+        projects_label:'Projets', projects_title:'Construit sur <em>AWS</em>',
+        status_complete:'Terminé', status_active:'En cours', status_planned:'Prévu',
+        proj1_name:'API REST Serverless', proj1_desc:'API de gestion utilisateurs avec authentification, CRUD et journalisation structurée.',
+        proj2_name:'Site Portfolio', proj2_desc:'Ce site. Hébergé sur S3 avec CDN CloudFront et certificat ACM.',
+        proj3_name:'Pipeline CI/CD', proj3_desc:'Pipeline de déploiement automatisé avec GitHub Actions et AWS CodePipeline.',
+        proj4_name:'Pipeline de notifications événementielles', proj4_desc:'Un projet en deux phases reliant la maîtrise CLI et l\'Infrastructure as Code.',
+        proj4_phase1:'Construit from scratch avec AWS CLI — règles EventBridge, topics SNS, files SQS, déclencheurs Lambda et intégration Secrets Manager.',
+        proj4_phase2:'La même infrastructure entièrement reprovisionnée en code Terraform — reproductible, versionnée et IaC-ready.',
+        proj4a_name:'Pipeline de notifications · CLI', proj4a_desc:'Système de notifications événementielles construit from scratch avec AWS CLI — règles EventBridge, topics SNS, files SQS, déclencheurs Lambda et Secrets Manager.',
+        proj4b_name:'Pipeline de notifications · Terraform', proj4b_desc:'La même infrastructure entièrement reprovisionnée en code Terraform. Reproductible, versionnée et IaC-ready — le même système, une discipline différente.',
+        proj5_name:'Infrastructure Terraform IaC', proj5_desc:'Provisionnement complet avec Terraform — VPC, EC2, RDS, groupes de sécurité.',
+        proj6_name:'Backend Chatbot IA', proj6_desc:'Backend serverless IA propulsé par Amazon Bedrock avec support du streaming.',
+        proj7_name:'Couche Sécurité & Observabilité', proj7_desc:'Stack de sécurité et monitoring enterprise avec détection des menaces.',
+        certs_label:'Certifications', certs_title:'Diplômes & <em>expertise</em>',
+        testimonials_label:'Témoignages', testimonials_title:'Ce que disent <em>les clients</em>',
+        t1_text:'Tonny a apporté une clarté architecturale que nous n\'avions jamais vue. La configuration AWS était propre, sécurisée, et exactement ce dont nous avions besoin.',
+        t1_name:'— Nom du client', t1_role:'CTO, Entreprise Mittelstand',
+        t2_text:'Travailler avec Tonny a été un plaisir. Il a expliqué chaque décision, tout documenté, et livré avant le délai.',
+        t2_name:'— Nom du client', t2_role:'Responsable ingénierie, Francfort',
+        t3_text:'Notre posture sécurité s\'est améliorée drastiquement. Les alertes GuardDuty ont chuté de 80% le premier mois.',
+        t3_name:'— Nom du client', t3_role:'Responsable IT, Secteur financier',
+        contact_label:'Contact', contact_title:'Travaillons <em>ensemble</em>',
+        contact_desc:'Disponible pour des missions freelance dans la région DACH et à l\'international. Spécialisé en architecture AWS, sécurité, IaC et backends IA.',
+        form_name:'Nom', form_email:'Email', form_message:'Message', form_submit:'Envoyer',
+        form_name_ph:'Votre nom', form_msg_ph:'Parlez-moi de votre projet...'
+      },
+      de: {
+        nav_about:'Über mich', nav_services:'Leistungen', nav_projects:'Projekte', nav_certs:'Zertifizierungen', nav_contact:'Kontakt',
+        hero_title:'AWS Solutions & <em>Security</em> Architect',
+        hero_sub:'Frankfurt · DACH · Weltweit · Verfügbar für Freelance',
+        hero_desc:'Ich entwerfe und sichere Cloud-Infrastrukturen auf AWS — von serverlosen APIs bis zu Security-Schichten auf Enterprise-Niveau. Ansässig in Frankfurt, tätig für Kunden in der DACH-Region und weltweit.',
+        hero_cta_primary:'Kontakt aufnehmen', hero_cta_secondary:'Projekte ansehen', scroll_hint:'Scrollen',
+        about_label:'Über mich', about_title:'Architekt aus <em>Überzeugung</em>,<br>Entwickler aus Herkunft',
+        about_p1:'Ich bin <strong>Tonny Piper</strong>, freiberuflicher AWS Solutions & Security Architect aus Frankfurt. Mein Hintergrund in der Softwareentwicklung — Java und JavaScript — gibt mir eine ungewöhnliche Kombination aus Architekturvision und technischer Tiefe.',
+        about_p2:'Ich arbeite mit Mittelstandsunternehmen und Kunden aus dem Finanzsektor in der DACH-Region und weltweit.',
+        about_p3:'Mein Ansatz ist CLI-first, Infrastructure-as-Code und Security by Design.',
+        stat_projects:'AWS-Projekte', stat_certs:'Zertifizierungen', stat_region:'Fokusregion', stat_approach:'Ansatz',
+        services_label:'Leistungen', services_title:'Was ich <em>anbiete</em>',
+        svc1_name:'Solutions Architecture', svc1_desc:'Entwurf skalierbarer, kosteneffizienter AWS-Architekturen für Webanwendungen, APIs und Datenpipelines.',
+        svc2_name:'Sicherheit & Compliance', svc2_desc:'Implementierung von Sicherheitsschichten, Bedrohungserkennung, Auditprotokollen und Compliance-Frameworks auf AWS.',
+        svc3_name:'Infrastructure as Code', svc3_desc:'Bereitstellung und Verwaltung von Cloud-Infrastruktur mit Terraform und AWS CLI. Reproduzierbar, auditierbar, versioniert.',
+        svc4_name:'KI-gestützte Backends', svc4_desc:'Aufbau und Integration von KI-Backends mit Amazon Bedrock und Claude. Automatisierung von Workflows, Wissensabruf und intelligenten APIs.',
+        projects_label:'Projekte', projects_title:'Gebaut auf <em>AWS</em>',
+        status_complete:'Abgeschlossen', status_active:'Aktiv', status_planned:'Geplant',
+        proj1_name:'Serverlose REST-API', proj1_desc:'Benutzerverwaltungs-API mit Authentifizierung, CRUD-Operationen und strukturiertem Logging.',
+        proj2_name:'Portfolio-Website', proj2_desc:'Diese Seite. Gehostet auf S3 mit CloudFront-CDN und ACM-Zertifikat.',
+        proj3_name:'CI/CD-Pipeline', proj3_desc:'Automatisierte Build- und Deployment-Pipeline mit GitHub Actions und AWS CodePipeline.',
+        proj4_name:'Ereignisgesteuerte Benachrichtigungs-Pipeline', proj4_desc:'Ein zweiphasiges Projekt, das CLI-Kompetenz und Infrastructure as Code verbindet.',
+        proj4_phase1:'Von Grund auf mit AWS CLI gebaut — EventBridge-Regeln, SNS-Topics, SQS-Queues, Lambda-Trigger und Secrets Manager-Integration.',
+        proj4_phase2:'Dieselbe Infrastruktur vollständig als Terraform-Code neu provisioniert — reproduzierbar, versioniert und IaC-ready.',
+        proj4a_name:'Benachrichtigungs-Pipeline · CLI', proj4a_desc:'Ereignisgesteuertes Benachrichtigungssystem von Grund auf mit AWS CLI gebaut — EventBridge-Regeln, SNS-Topics, SQS-Queues, Lambda-Trigger und Secrets Manager.',
+        proj4b_name:'Benachrichtigungs-Pipeline · Terraform', proj4b_desc:'Dieselbe Infrastruktur vollständig als Terraform-Code neu provisioniert. Reproduzierbar, versioniert und IaC-ready — dasselbe System, eine andere Disziplin.',
+        proj5_name:'Terraform IaC-Infrastruktur', proj5_desc:'Vollständige Infrastrukturbereitstellung mit Terraform — VPC, EC2, RDS, Sicherheitsgruppen.',
+        proj6_name:'KI-Chatbot-Backend', proj6_desc:'Serverloses KI-Backend auf Basis von Amazon Bedrock mit Streaming-Unterstützung.',
+        proj7_name:'Security & Observability Layer', proj7_desc:'Enterprise-Security- und Monitoring-Stack mit Bedrohungserkennung und Audit-Logging.',
+        certs_label:'Zertifizierungen', certs_title:'Qualifikationen & <em>Expertise</em>',
+        testimonials_label:'Referenzen', testimonials_title:'Was Kunden <em>sagen</em>',
+        t1_text:'Tonny brachte eine architektonische Klarheit, die wir vorher nicht kannten. Das AWS-Setup war sauber, sicher und genau das, was wir brauchten.',
+        t1_name:'— Kundenname', t1_role:'CTO, Mittelstandsunternehmen',
+        t2_text:'Die Zusammenarbeit mit Tonny war eine Freude. Er erklärte jede Entscheidung, dokumentierte alles und lieferte vor dem Termin.',
+        t2_name:'— Kundenname', t2_role:'Engineering Lead, Frankfurt',
+        t3_text:'Unsere Sicherheitslage verbesserte sich drastisch. GuardDuty-Befunde sanken im ersten Monat um 80%.',
+        t3_name:'— Kundenname', t3_role:'IT-Leiter, Finanzsektor',
+        contact_label:'Kontakt', contact_title:'Lassen Sie uns <em>zusammenarbeiten</em>',
+        contact_desc:'Verfügbar für Freelance-Engagements in der DACH-Region und weltweit. Spezialisiert auf AWS-Architektur, Sicherheit, IaC und KI-Backends.',
+        form_name:'Name', form_email:'E-Mail', form_message:'Nachricht', form_submit:'Nachricht senden',
+        form_name_ph:'Ihr Name', form_msg_ph:'Erzählen Sie mir von Ihrem Projekt...'
+      }
+    };
+
+    function setLang(lang) {
+      document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent.toLowerCase() === lang));
+      document.documentElement.lang = lang;
+      const t = translations[lang];
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.dataset.i18n;
+        if (t[key] !== undefined) el.innerHTML = t[key];
+           });
+      document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+        const key = el.dataset.i18nPlaceholder;
+        if (t[key] !== undefined) el.placeholder = t[key];
+      });
+      // Update aria-pressed on lang buttons
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.setAttribute('aria-pressed', b.textContent.trim().toLowerCase() === lang ? 'true' : 'false');
+      });
+    }
+  </script>
+</body>
+</html>

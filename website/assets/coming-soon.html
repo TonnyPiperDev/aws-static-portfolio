@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Tonny Piper — Coming Soon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg:          #0D0D0D;
+      --fg:          #F5F0E8;
+      --fg-muted:    rgba(245,240,232,0.6);
+      --gold:        #C9A84C;
+      --gold-light:  #e0bf7a;
+      --gold-dim:    rgba(201,168,76,0.13);
+      --gold-border: rgba(201,168,76,0.28);
+      --grey:        #777;
+    }
+    [data-theme="light"] {
+      --bg:          #F5F0E8;
+      --fg:          #0D0D0D;
+      --fg-muted:    rgba(13,13,13,0.58);
+      --grey:        #999;
+      --gold-dim:    rgba(201,168,76,0.1);
+      --gold-border: rgba(201,168,76,0.35);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: 'DM Sans', sans-serif;
+      overflow: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    @media (hover: hover) {
+      body, a, button { cursor: none; }
+    }
+
+    /* Custom cursor — mouse only */
+    .cursor, .cursor-ring { display: none; }
+    @media (hover: hover) {
+      .cursor {
+        display: block; position: fixed;
+        width: 10px; height: 10px;
+        background: var(--gold); border-radius: 50%;
+        pointer-events: none; z-index: 9999;
+        transform: translate(-50%,-50%);
+        transition: width .15s, height .15s;
+      }
+      .cursor-ring {
+        display: block; position: fixed;
+        width: 34px; height: 34px;
+        border: 1px solid var(--gold-border); border-radius: 50%;
+        pointer-events: none; z-index: 9998;
+        transform: translate(-50%,-50%);
+      }
+    }
+
+    /* Noise */
+    body::before {
+      content: ''; position: fixed; inset: 0; pointer-events: none; z-index: 1;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+      opacity: 0.35;
+    }
+
+    /* Glow */
+    body::after {
+      content: ''; position: fixed;
+      top: 50%; left: 50%; transform: translate(-50%,-50%);
+      width: 700px; height: 700px;
+      background: radial-gradient(ellipse at center, rgba(201,168,76,0.07) 0%, transparent 70%);
+      pointer-events: none; z-index: 0;
+    }
+
+    /* Top bar */
+    .topbar {
+      position: fixed; top: 2rem; right: 2.5rem;
+      display: flex; align-items: center; gap: 1rem;
+      z-index: 100;
+      opacity: 0; animation: fadeIn 1s ease 1.2s forwards;
+    }
+
+    .lang-switcher { display: flex; align-items: center; gap: 0.4rem; }
+    .lang-btn {
+      background: none; border: none;
+      color: var(--grey);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.68rem; font-weight: 500;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: 0.3rem 0.4rem; border-radius: 2px;
+      transition: color 0.2s ease;
+    }
+    .lang-btn:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .lang-btn.active { color: var(--gold); }
+    .lang-btn:hover  { color: var(--gold-light); }
+    .lang-sep { color: var(--gold-border); font-size: 0.7rem; user-select: none; }
+
+    .theme-toggle {
+      background: none; border: 1px solid var(--gold-border);
+      width: 30px; height: 30px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      color: var(--gold); transition: background 0.2s ease;
+    }
+    .theme-toggle:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+    .theme-toggle:hover { background: var(--gold-dim); }
+    .theme-toggle svg { width: 13px; height: 13px; pointer-events: none; }
+    .icon-moon { display: block; }
+    .icon-sun  { display: none; }
+    [data-theme="light"] .icon-moon { display: none; }
+    [data-theme="light"] .icon-sun  { display: block; }
+
+    /* Main */
+    main {
+      position: relative; z-index: 2;
+      height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 2rem;
+    }
+
+    .monogram {
+      width: 64px; height: 64px; margin-bottom: 2.5rem;
+      opacity: 0; animation: fadeUp 0.9s ease 0.2s forwards;
+    }
+    .monogram svg { width: 100%; height: 100%; }
+
+    .name {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.8rem, 6vw, 5rem);
+      font-weight: 400; letter-spacing: 0.02em;
+      color: var(--fg); line-height: 1;
+      opacity: 0; animation: fadeUp 0.9s ease 0.4s forwards;
+    }
+    .name span { color: var(--gold); }
+
+    .tagline {
+      margin-top: 1.2rem;
+      font-size: 0.78rem; font-weight: 300;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--grey);
+      opacity: 0; animation: fadeUp 0.9s ease 0.6s forwards;
+    }
+
+    .divider {
+      width: 1px; height: 44px;
+      background: linear-gradient(to bottom, transparent, var(--gold-border), transparent);
+      margin: 2rem auto;
+      opacity: 0; animation: fadeIn 0.9s ease 0.78s forwards;
+    }
+
+    .description {
+      max-width: 500px;
+      font-size: 0.95rem; font-weight: 300; line-height: 1.85;
+      color: var(--fg-muted);
+      opacity: 0; animation: fadeUp 0.9s ease 0.9s forwards;
+    }
+
+    .specialisms {
+      display: flex; flex-wrap: wrap;
+      justify-content: center; gap: 0.5rem;
+      margin-top: 1.4rem;
+      opacity: 0; animation: fadeUp 0.9s ease 1s forwards;
+    }
+    .spec-tag {
+      padding: 0.25rem 0.75rem;
+      border: 1px solid var(--gold-border);
+      background: var(--gold-dim);
+      font-size: 0.65rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      color: var(--gold);
+    }
+
+    .socials {
+      display: flex; gap: 1.5rem; margin-top: 2.4rem;
+      opacity: 0; animation: fadeUp 0.9s ease 1.08s forwards;
+    }
+    .social-link {
+      display: flex; align-items: center; gap: 0.5rem;
+      text-decoration: none; color: var(--grey);
+      font-size: 0.74rem; font-weight: 500;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      transition: color 0.2s ease; border-radius: 2px;
+    }
+    .social-link:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+    .social-link:hover { color: var(--gold); }
+    .social-link svg { width: 15px; height: 15px; }
+
+    .soon-label {
+      position: fixed; bottom: 2rem; left: 50%;
+      transform: translateX(-50%);
+      font-size: 0.63rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: rgba(201,168,76,0.32); z-index: 2; white-space: nowrap;
+      opacity: 0; animation: fadeIn 1s ease 1.3s forwards;
+    }
+
+    /* Corners */
+    .corner { position: fixed; width: 38px; height: 38px; opacity: 0.16; z-index: 2; }
+    .corner--tl { top: 1.4rem; left: 1.4rem; border-top: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+    .corner--tr { top: 1.4rem; right: 1.4rem; border-top: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+    .corner--bl { bottom: 1.4rem; left: 1.4rem; border-bottom: 1px solid var(--gold); border-left: 1px solid var(--gold); }
+    .corner--br { bottom: 1.4rem; right: 1.4rem; border-bottom: 1px solid var(--gold); border-right: 1px solid var(--gold); }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; } to { opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
+    @media (max-width: 480px) {
+      .topbar { top: 1.2rem; right: 1.2rem; }
+      .name { font-size: 2.4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor" aria-hidden="true"></div>
+  <div class="cursor-ring" id="cursorRing" aria-hidden="true"></div>
+
+  <div class="corner corner--tl" aria-hidden="true"></div>
+  <div class="corner corner--tr" aria-hidden="true"></div>
+  <div class="corner corner--bl" aria-hidden="true"></div>
+  <div class="corner corner--br" aria-hidden="true"></div>
+
+  <div class="topbar">
+    <nav class="lang-switcher" aria-label="Select language">
+      <button class="lang-btn active" onclick="setLang('en')" aria-pressed="true"  aria-label="English">EN</button>
+      <span class="lang-sep" aria-hidden="true">·</span>
+      <button class="lang-btn"        onclick="setLang('fr')" aria-pressed="false" aria-label="Français">FR</button>
+      <span class="lang-sep" aria-hidden="true">·</span>
+      <button class="lang-btn"        onclick="setLang('de')" aria-pressed="false" aria-label="Deutsch">DE</button>
+    </nav>
+    <button class="theme-toggle" id="themeToggle" aria-label="Switch to light mode">
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+    </button>
+  </div>
+
+  <main>
+    <div class="monogram" aria-hidden="true">
+      <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <polygon points="32,2 62,32 32,62 2,32" fill="none" stroke="#C9A84C" stroke-width="1.2"/>
+        <polygon points="32,10 54,32 32,54 10,32" fill="rgba(201,168,76,0.06)" stroke="rgba(201,168,76,0.22)" stroke-width="0.6"/>
+        <text x="50%" y="54%" dominant-baseline="middle" text-anchor="middle"
+              font-family="Playfair Display, serif" font-size="16" fill="#C9A84C" letter-spacing="1">TP</text>
+      </svg>
+    </div>
+
+    <h1 class="name">Tonny <span>Piper</span></h1>
+    <p class="tagline" id="tagline">Based in Frankfurt. Available worldwide.</p>
+
+    <div class="divider" aria-hidden="true"></div>
+
+    <p class="description" id="description">
+      I design and secure cloud infrastructure on AWS for clients across the DACH region and beyond. Specialising in cloud architecture, security, Infrastructure as Code, and AI-powered backends.
+    </p>
+
+    <div class="specialisms" id="specialisms" aria-label="Areas of expertise">
+      <span class="spec-tag">Architecture</span>
+      <span class="spec-tag">Security</span>
+      <span class="spec-tag">IaC</span>
+      <span class="spec-tag">AI / Bedrock</span>
+    </div>
+
+    <div class="socials">
+      <a class="social-link" href="https://www.linkedin.com/in/tonny-piper/" target="_blank" rel="noopener noreferrer" aria-label="Tonny Piper on LinkedIn">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6zM2 9h4v12H2z"/><circle cx="4" cy="4" r="2"/></svg>
+        LinkedIn
+      </a>
+      <a class="social-link" href="https://github.com/TonnyPiperDev" target="_blank" rel="noopener noreferrer" aria-label="Tonny Piper on GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+        GitHub
+      </a>
+    </div>
+  </main>
+
+  <p class="soon-label" id="soonLabel" aria-live="polite">Launching 2026</p>
+
+  <script>
+    // Cursor
+    if (window.matchMedia('(hover: hover)').matches) {
+      const c = document.getElementById('cursor');
+      const r = document.getElementById('cursorRing');
+      let mx=0,my=0,rx=0,ry=0;
+      document.addEventListener('mousemove', e => { mx=e.clientX; my=e.clientY; });
+      (function tick(){ c.style.left=mx+'px'; c.style.top=my+'px'; rx+=(mx-rx)*.12; ry+=(my-ry)*.12; r.style.left=rx+'px'; r.style.top=ry+'px'; requestAnimationFrame(tick); })();
+    }
+
+    // Theme
+    const toggle = document.getElementById('themeToggle');
+    toggle.addEventListener('click', () => {
+      const isLight = document.body.dataset.theme === 'light';
+      document.body.dataset.theme = isLight ? '' : 'light';
+      toggle.setAttribute('aria-label', isLight ? 'Switch to light mode' : 'Switch to dark mode');
+    });
+
+    // i18n
+    const i18n = {
+      en: {
+        tagline:     'Based in Frankfurt. Available worldwide.',
+        description: 'I design and secure cloud infrastructure on AWS for clients across the DACH region and beyond. Specialising in cloud architecture, security, Infrastructure as Code, and AI-powered backends.',
+        specs:       ['Architecture', 'Security', 'IaC', 'AI / Bedrock'],
+        soon:        'Launching 2026',
+        li:          'Tonny Piper on LinkedIn',
+        gh:          'Tonny Piper on GitHub'
+      },
+      fr: {
+        tagline:     'Basé à Francfort. Disponible dans le monde entier.',
+        description: 'Je conçois et sécurise des infrastructures cloud AWS pour des clients dans la région DACH et au-delà. Spécialisé en architecture cloud, sécurité, Infrastructure as Code et backends IA.',
+        specs:       ['Architecture', 'Sécurité', 'IaC', 'IA / Bedrock'],
+        soon:        'Lancement en 2026',
+        li:          'Tonny Piper sur LinkedIn',
+        gh:          'Tonny Piper sur GitHub'
+      },
+      de: {
+        tagline:     'Ansässig in Frankfurt. Weltweit verfügbar.',
+        description: 'Ich entwerfe und sichere Cloud-Infrastrukturen auf AWS für Kunden in der DACH-Region und darüber hinaus. Spezialisiert auf Cloud-Architektur, Sicherheit, Infrastructure as Code und KI-Backends.',
+        specs:       ['Architektur', 'Sicherheit', 'IaC', 'KI / Bedrock'],
+        soon:        'Start 2026',
+        li:          'Tonny Piper auf LinkedIn',
+        gh:          'Tonny Piper auf GitHub'
+      }
+    };
+
+    function setLang(lang) {
+      const t = i18n[lang];
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        const active = b.textContent.trim().toLowerCase() === lang;
+        b.classList.toggle('active', active);
+        b.setAttribute('aria-pressed', active ? 'true' : 'false');
+      });
+      document.getElementById('tagline').innerHTML       = t.tagline;
+      document.getElementById('description').textContent = t.description;
+      document.getElementById('soonLabel').textContent   = t.soon;
+      document.getElementById('specialisms').innerHTML   = t.specs.map(s => `<span class="spec-tag">${s}</span>`).join('');
+      const links = document.querySelectorAll('.social-link');
+      links[0].setAttribute('aria-label', t.li);
+      links[1].setAttribute('aria-label', t.gh);
+      document.documentElement.lang = lang;
+    }
+  </script>
+</body>
+</html>
