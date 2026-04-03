@@ -17,6 +17,7 @@ REGION="YOUR_REGION"                 # e.g. eu-central-1
 WEBSITE_DIR="./website"              # path to your website files
 DOMAIN="YOUR_DOMAIN"                 # e.g. tonnypiper.dev
 WWW_DOMAIN="www.YOUR_DOMAIN"         # e.g. www.tonnypiper.dev
+CERTIFICATE_ARN="YOUR_CERTIFICATE_ARN" # ACM certificate ARN from us-east-1
 
 # ── Step 1: Create S3 bucket ───────────────────────────────────────────────
 aws s3api create-bucket \
@@ -33,7 +34,13 @@ aws s3 website s3://"$BUCKET_NAME" \
 aws s3api get-public-access-block --bucket "$BUCKET_NAME"
 
 # ── Step 4: Request ACM certificate (must be in us-east-1) ────────────────
-# Coming soon
+aws acm request-certificate \
+  --domain-name "$DOMAIN" \
+  --subject-alternative-names "$WWW_DOMAIN" \
+  --validation-method DNS \
+  --region us-east-1
+# After running: add the CNAME validation records to your DNS provider
+# Then wait 5-30 minutes for status to change from PENDING_VALIDATION to ISSUED
 
 # ── Step 5: Create CloudFront distribution ────────────────────────────────
 # Coming soon
