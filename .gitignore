@@ -1,0 +1,35 @@
+# OS
+.DS_Store
+Thumbs.db
+
+# AWS
+.aws/
+*.pem
+*.key
+
+# AWS SAM / CDK
+cdk.out/
+samconfig.toml
+
+# Terraform
+**/.terraform/
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform.lock.hcl
+
+# Secrets — never commit these
+secrets/
+*.env
+.env*
+
+# Local config overrides
+*.local
+
+# Logs
+*.log
+
+# Editor
+.vscode/
+.idea/
+*.swp
