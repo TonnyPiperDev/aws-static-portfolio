@@ -19,13 +19,18 @@ DOMAIN="YOUR_DOMAIN"                 # e.g. tonnypiper.dev
 WWW_DOMAIN="www.YOUR_DOMAIN"         # e.g. www.tonnypiper.dev
 
 # ── Step 1: Create S3 bucket ───────────────────────────────────────────────
-# Coming soon — populated during deployment walkthrough
+aws s3api create-bucket \
+  --bucket "$BUCKET_NAME" \
+  --region "$REGION" \
+  --create-bucket-configuration LocationConstraint="$REGION"
 
 # ── Step 2: Enable static website hosting ─────────────────────────────────
-# Coming soon
+aws s3 website s3://"$BUCKET_NAME" \
+  --index-document index.html \
+  --error-document error.html
 
-# ── Step 3: Apply bucket policy ───────────────────────────────────────────
-# Coming soon
+# ── Step 3: Verify public access block is on (S3 stays private) ───────────
+aws s3api get-public-access-block --bucket "$BUCKET_NAME"
 
 # ── Step 4: Request ACM certificate (must be in us-east-1) ────────────────
 # Coming soon
@@ -33,7 +38,10 @@ WWW_DOMAIN="www.YOUR_DOMAIN"         # e.g. www.tonnypiper.dev
 # ── Step 5: Create CloudFront distribution ────────────────────────────────
 # Coming soon
 
-# ── Step 6: Upload website files to S3 ────────────────────────────────────
+# ── Step 6: Apply bucket policy (CloudFront OAC only) ─────────────────────
+# Coming soon
+
+# ── Step 7: Upload website files to S3 ────────────────────────────────────
 # Coming soon
 
 echo "Deployment complete."
