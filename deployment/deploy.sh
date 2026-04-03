@@ -18,9 +18,9 @@ WEBSITE_DIR="./website"                # path to your website files
 DOMAIN="YOUR_DOMAIN"                   # e.g. tonnypiper.dev
 WWW_DOMAIN="www.YOUR_DOMAIN"           # e.g. www.tonnypiper.dev
 CERTIFICATE_ARN="YOUR_CERTIFICATE_ARN" # ACM certificate ARN from us-east-1
-ACCOUNT_ID="YOUR_ACCOUNT_ID"           # AWS account ID
-OAC_ID="YOUR_OAC_ID"                   # Origin Access Control ID
 DISTRIBUTION_ID="YOUR_DISTRIBUTION_ID" # CloudFront distribution ID
+OAC_ID="YOUR_OAC_ID"                   # Origin Access Control ID
+ACCOUNT_ID="YOUR_ACCOUNT_ID"           # AWS account ID
 
 # ── Step 1: Create S3 bucket ───────────────────────────────────────────────
 aws s3api create-bucket \
@@ -55,7 +55,7 @@ aws cloudfront create-origin-access-control \
     "SigningBehavior": "always",
     "OriginAccessControlOriginType": "s3"
   }'
-# Save the OAC ID from the output
+# Note the OAC ID from the output
 
 # ── Step 6: Create CloudFront distribution ────────────────────────────────
 aws cloudfront create-distribution \
@@ -66,9 +66,9 @@ aws cloudfront create-distribution \
       "Quantity": 1,
       "Items": [{
         "Id": "YOUR_DOMAIN-s3",
-        "DomainName": "'"$BUCKET_NAME"'.s3.'"$REGION"'.amazonaws.com",
+        "DomainName": "YOUR_DOMAIN.s3.YOUR_REGION.amazonaws.com",
         "S3OriginConfig": {"OriginAccessIdentity": ""},
-        "OriginAccessControlId": "'"$OAC_ID"'"
+        "OriginAccessControlId": "YOUR_OAC_ID"
       }]
     },
     "DefaultCacheBehavior": {
@@ -83,10 +83,10 @@ aws cloudfront create-distribution \
     "DefaultRootObject": "coming-soon.html",
     "Aliases": {
       "Quantity": 2,
-      "Items": ["'"$DOMAIN"'", "'"$WWW_DOMAIN"'"]
+      "Items": ["YOUR_DOMAIN", "www.YOUR_DOMAIN"]
     },
     "ViewerCertificate": {
-      "ACMCertificateArn": "'"$CERTIFICATE_ARN"'",
+      "ACMCertificateArn": "YOUR_CERTIFICATE_ARN",
       "SSLSupportMethod": "sni-only",
       "MinimumProtocolVersion": "TLSv1.2_2021"
     },
@@ -94,8 +94,8 @@ aws cloudfront create-distribution \
     "Enabled": true,
     "HttpVersion": "http2"
   }'
-# Save the Distribution ID and DomainName from the output
-# Wait 5-15 minutes for Status to change from InProgress to Deployed
+# After running: add CNAME record in your DNS provider pointing to CloudFront domain
+# Wait 5-15 minutes for distribution to deploy (Status: InProgress → Deployed)
 
 # ── Step 7: Apply bucket policy (CloudFront OAC only) ─────────────────────
 aws s3api put-bucket-policy \
@@ -110,17 +110,18 @@ aws s3api put-bucket-policy \
         "Service": "cloudfront.amazonaws.com"
       },
       "Action": "s3:GetObject",
-      "Resource": "arn:aws:s3:::'"$BUCKET_NAME"'/*",
+      "Resource": "arn:aws:s3:::YOUR_DOMAIN/*",
       "Condition": {
         "StringEquals": {
-          "AWS:SourceArn": "arn:aws:cloudfront::'"$ACCOUNT_ID"':distribution/'"$DISTRIBUTION_ID"'"
+          "AWS:SourceArn": "arn:aws:cloudfront::YOUR_ACCOUNT_ID:distribution/YOUR_DISTRIBUTION_ID"
         }
       }
     }]
   }'
 
 # ── Step 8: Upload website files to S3 ────────────────────────────────────
-# Coming soon
+aws s3 sync "$WEBSITE_DIR" s3://"$BUCKET_NAME" \
+  --region "$REGION"
 
 echo "Deployment complete."
 echo "Site: https://$DOMAIN"
