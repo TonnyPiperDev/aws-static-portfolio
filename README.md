@@ -6,7 +6,7 @@ This project hosts a static personal portfolio website on AWS with global CDN de
 
 ## Architecture
 
-![Architecture Diagram](architecture-diagram.png)
+![Architecture Diagram](architecture-diagram.svg)
 
 ## AWS Services Used
 
