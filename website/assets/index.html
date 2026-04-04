@@ -21,15 +21,13 @@
       --muted: rgba(245,240,232,0.55);
       --grey: #555;
       --violet: #7C5CBF;
-      --red: #C0392B;
-      --blue: #2980B9;
       --radius: 2px;
       --transition: 0.25s ease;
     }
     [data-theme="light"] {
-      --obsidian: #F5F0E8;
-      --obsidian-2: #EDE8DE;
-      --obsidian-3: #E4DED2;
+      --obsidian: #EDEAE3;
+      --obsidian-2: #E4E0D8;
+      --obsidian-3: #DAD6CE;
       --white: #0D0D0D;
       --muted: rgba(13,13,13,0.55);
       --grey: #999;
@@ -80,7 +78,8 @@
       position: fixed; top: 0; left: 0; right: 0; z-index: 200;
       display: flex; align-items: center; justify-content: space-between;
       padding: 1.4rem 3rem;
-      background: linear-gradient(to bottom, var(--obsidian) 60%, transparent);
+      background: var(--obsidian);
+      border-bottom: 1px solid var(--gold-border);
       transition: background var(--transition);
     }
     .nav-logo {
@@ -371,6 +370,11 @@
       font-size: 0.6rem; font-weight: 600; letter-spacing: 0.05em;
       color: var(--gold);
     }
+    /* Issuer badge colors */
+    .cert-badge.aws      { background: rgba(255,153,0,0.12); border-color: rgba(255,153,0,0.4); color: #FF9900; }
+    .cert-badge.hcp      { background: rgba(124,92,191,0.12); border-color: rgba(124,92,191,0.35); color: #7C5CBF; }
+    .cert-badge.anthropic { background: rgba(124,92,191,0.12); border-color: rgba(124,92,191,0.35); color: #7C5CBF; }
+    .cert-badge.comptia  { background: rgba(192,57,43,0.12); border-color: rgba(192,57,43,0.35); color: #C0392B; }
     .cert-name { font-size: 0.9rem; font-weight: 500; margin-bottom: 0.3rem; }
     .cert-issuer { font-size: 0.7rem; color: var(--muted); letter-spacing: 0.05em; }
     .cert-status-dot {
@@ -378,7 +382,7 @@
       width: 6px; height: 6px; border-radius: 50%;
     }
     .cert-card.earned .cert-status-dot { background: #2ecc71; }
-    .cert-card.in-progress .cert-status-dot { background: var(--gold); }
+    .cert-card.in-progress .cert-status-dot { background: #FF9900; }
     .cert-card.planned .cert-status-dot { background: var(--grey); }
 
     /* ── Testimonials carousel ── */
@@ -747,49 +751,49 @@
       <div class="certs-grid reveal">
         <div class="cert-card earned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AWS</div>
+          <div class="cert-badge aws">AWS</div>
           <div class="cert-name">Cloud Practitioner</div>
           <div class="cert-issuer">Amazon Web Services</div>
         </div>
         <div class="cert-card earned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AWS</div>
+          <div class="cert-badge aws">AWS</div>
           <div class="cert-name">AI Practitioner</div>
           <div class="cert-issuer">Amazon Web Services</div>
         </div>
         <div class="cert-card in-progress">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AWS</div>
+          <div class="cert-badge aws">AWS</div>
           <div class="cert-name">Solutions Architect Associate</div>
           <div class="cert-issuer">Amazon Web Services · In Progress</div>
         </div>
         <div class="cert-card planned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">HCP</div>
+          <div class="cert-badge hcp">HCP</div>
           <div class="cert-name">Terraform Associate</div>
           <div class="cert-issuer">HashiCorp · Planned</div>
         </div>
         <div class="cert-card planned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AI</div>
+          <div class="cert-badge anthropic">AI</div>
           <div class="cert-name">Claude AI Certification</div>
           <div class="cert-issuer">Anthropic · Planned</div>
         </div>
         <div class="cert-card planned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">SEC</div>
+          <div class="cert-badge comptia">SEC</div>
           <div class="cert-name">Security+</div>
           <div class="cert-issuer">CompTIA · Planned</div>
         </div>
         <div class="cert-card planned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AWS</div>
+          <div class="cert-badge aws">AWS</div>
           <div class="cert-name">Solutions Architect Professional</div>
           <div class="cert-issuer">Amazon Web Services · 2027</div>
         </div>
         <div class="cert-card planned">
           <div class="cert-status-dot"></div>
-          <div class="cert-badge">AWS</div>
+          <div class="cert-badge aws">AWS</div>
           <div class="cert-name">Security Specialty</div>
           <div class="cert-issuer">Amazon Web Services · 2027</div>
         </div>
@@ -1077,15 +1081,25 @@
       document.querySelectorAll('[data-i18n]').forEach(el => {
         const key = el.dataset.i18n;
         if (t[key] !== undefined) el.innerHTML = t[key];
-           });
+      });
       document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
         const key = el.dataset.i18nPlaceholder;
         if (t[key] !== undefined) el.placeholder = t[key];
       });
-      // Update aria-pressed on lang buttons
       document.querySelectorAll('.lang-btn').forEach(b => {
         b.setAttribute('aria-pressed', b.textContent.trim().toLowerCase() === lang ? 'true' : 'false');
       });
+    }
+
+    // Auto-detect language from browser
+    const browserLang = (navigator.language || 'en').substring(0, 2).toLowerCase();
+    const supportedLangs = ['en', 'fr', 'de'];
+    setLang(supportedLangs.includes(browserLang) ? browserLang : 'en');
+
+    // Auto-detect dark/light from OS preference
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) {
+      document.body.dataset.theme = 'light';
+      document.getElementById('themeToggle').setAttribute('aria-label', 'Switch to dark mode');
     }
   </script>
 </body>
