@@ -1,0 +1,25 @@
+version: 0.2
+
+phases:
+  pre_build:
+    commands:
+      - echo "Starting deployment process..."
+      - echo "Build started on $(date)"
+  
+  build:
+    commands:
+      - echo "No build step required for static site"
+  
+  post_build:
+    commands:
+      - echo "Syncing files to S3..."
+      - aws s3 sync . s3://tonnypiper.dev --delete --exclude ".git/*" --exclude "buildspec.yml" --exclude "README.md"
+      - echo "S3 sync completed"
+      - echo "Invalidating CloudFront cache..."
+      - aws cloudfront create-invalidation --distribution-id E32G8ZW2OGZL2 --paths "/*"
+      - echo "CloudFront invalidation initiated"
+      - echo "Deployment completed on $(date)"
+
+artifacts:
+  files:
+    - '**/*'
