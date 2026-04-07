@@ -13,7 +13,7 @@ phases:
   post_build:
     commands:
       - echo "Syncing files to S3..."
-      - aws s3 sync . s3://tonnypiper.dev --delete --exclude ".git/*" --exclude "buildspec.yml" --exclude "README.md"
+      - aws s3 sync website/ s3://tonnypiper.dev --delete
       - echo "S3 sync completed"
       - echo "Invalidating CloudFront cache..."
       - aws cloudfront create-invalidation --distribution-id E32G8ZW2OGZL2 --paths "/*"
