@@ -42,3 +42,8 @@ pipeline-config.json
 pipeline-config-with-token.json
 pipeline-config.json
 pipeline-config-with-token.json
+codebuild-project.json
+codebuild-trust-policy.json
+codebuild-permissions-policy.json
+codepipeline-trust-policy.json
+codepipeline-permissions-policy.json
