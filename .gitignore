@@ -34,16 +34,11 @@ secrets/
 .idea/
 *.swp
 
-# IAM policy files
+# IAM policy files and AWS configs
 *-policy.json
 *-trust-policy.json
 *-permissions-policy.json
 pipeline-config.json
 pipeline-config-with-token.json
-pipeline-config.json
-pipeline-config-with-token.json
 codebuild-project.json
-codebuild-trust-policy.json
-codebuild-permissions-policy.json
-codepipeline-trust-policy.json
-codepipeline-permissions-policy.json
+distribution-config.json
