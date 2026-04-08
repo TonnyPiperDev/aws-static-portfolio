@@ -33,3 +33,8 @@ secrets/
 .vscode/
 .idea/
 *.swp
+
+# IAM policy files
+*-policy.json
+*-trust-policy.json
+*-permissions-policy.json
