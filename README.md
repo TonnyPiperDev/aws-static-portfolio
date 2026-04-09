@@ -105,5 +105,3 @@ CodeBuild executes these commands on every deployment:
 Build while studying for AWS Solutions Architect Associate (SAA-C03) - April 2026
 
 Tonny Piper | https://github.com/TonnyPiperDev
-
-
