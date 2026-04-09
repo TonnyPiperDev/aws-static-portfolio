@@ -30,7 +30,7 @@ This project hosts a static personal portfolio website on AWS with global CDN de
 git push → GitHub webhook → CodePipeline triggers → CodeBuild runs buildspec.yml → S3 sync → CloudFront invalidation → Live in ~2 minutes
 
 ## Project Structure
-
+```
 aws-static-portfolio/
 ├── website/                  # Website files
 │   ├── index.html           # Main page
@@ -41,6 +41,7 @@ aws-static-portfolio/
 ├── buildspec.yml            # CodeBuild instructions
 ├── architecture-diagram.svg # Architecture visualization
 └── README.md
+```
 
 ## How to Deploy Changes
 
