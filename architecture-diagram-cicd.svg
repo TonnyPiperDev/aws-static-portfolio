@@ -1,0 +1,106 @@
+<svg viewBox="0 0 800 620" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style>
+      .box { fill: #232F3E; stroke: #FF9900; stroke-width: 2; }
+      .external { fill: #146EB4; stroke: #0F4C81; stroke-width: 2; }
+      .text { fill: #FFFFFF; font-family: Arial, sans-serif; font-size: 14px; text-anchor: middle; }
+      .label { fill: #AAB7B8; font-size: 11px; text-anchor: middle; }
+      .arrow { stroke: #FF9900; stroke-width: 2; fill: none; marker-end: url(#arrowhead); }
+      .flow-text { fill: #FF9900; font-size: 10px; font-style: italic; }
+    </style>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#FF9900" />
+    </marker>
+  </defs>
+  
+  <!-- Title -->
+  <text x="400" y="30" class="text" font-size="20" font-weight="bold">AWS CI/CD Pipeline Architecture</text>
+  
+  <!-- GitHub -->
+  <rect x="50" y="80" width="120" height="60" class="external" rx="5"/>
+  <text x="110" y="113" class="text">GitHub</text>
+  
+  <!-- CodePipeline -->
+  <rect x="240" y="80" width="140" height="70" class="box" rx="5"/>
+  <text x="310" y="110" class="text">CodePipeline</text>
+  <text x="310" y="132" class="label">(Orchestration)</text>
+  
+  <!-- CodeBuild -->
+  <rect x="450" y="80" width="140" height="70" class="box" rx="5"/>
+  <text x="520" y="110" class="text">CodeBuild</text>
+  <text x="520" y="132" class="label">(Build & Deploy)</text>
+  
+  <!-- S3 -->
+  <rect x="240" y="220" width="140" height="70" class="box" rx="5"/>
+  <text x="310" y="250" class="text">S3 Bucket</text>
+  <text x="310" y="272" class="label">(Website Files)</text>
+  
+  <!-- CloudFront -->
+  <rect x="450" y="220" width="140" height="70" class="box" rx="5"/>
+  <text x="520" y="250" class="text">CloudFront</text>
+  <text x="520" y="272" class="label">(Global CDN)</text>
+  
+  <!-- Users -->
+  <rect x="650" y="220" width="100" height="60" class="external" rx="5"/>
+  <text x="700" y="253" class="text">Users</text>
+  
+  <!-- Secrets Manager -->
+  <rect x="30" y="220" width="160" height="70" class="box" rx="5"/>
+  <text x="110" y="250" class="text">Secrets Manager</text>
+  <text x="110" y="272" class="label">(GitHub Token)</text>
+  
+  <!-- CloudWatch -->
+  <rect x="450" y="370" width="140" height="70" class="box" rx="5"/>
+  <text x="520" y="397" class="text">CloudWatch</text>
+  <text x="520" y="419" class="label">(Logs & Monitoring)</text>
+  
+  <!-- IAM Roles -->
+  <rect x="240" y="370" width="140" height="80" class="box" rx="5"/>
+  <text x="310" y="400" class="text">IAM Roles</text>
+  <text x="310" y="420" class="label">CodeBuild Role</text>
+  <text x="310" y="436" class="label">CodePipeline Role</text>
+  
+  <!-- Flow Arrows -->
+  <!-- GitHub to CodePipeline -->
+  <path d="M 170 115 L 240 115" class="arrow"/>
+  <text x="205" y="110" class="flow-text">git push</text>
+  
+  <!-- CodePipeline to CodeBuild -->
+  <path d="M 380 115 L 450 115" class="arrow"/>
+  <text x="415" y="110" class="flow-text">trigger</text>
+  
+  <!-- CodeBuild to S3 -->
+  <path d="M 520 150 L 520 190 L 310 190 L 310 220" class="arrow"/>
+  <text x="340" y="205" class="flow-text">sync files</text>
+  
+  <!-- S3 to CloudFront -->
+  <path d="M 380 255 L 450 255" class="arrow"/>
+  <text x="415" y="250" class="flow-text">origin</text>
+  
+  <!-- CloudFront to Users - FIXED -->
+  <path d="M 590 250 L 650 250" class="arrow"/>
+  <text x="620" y="245" class="flow-text">HTTPS</text>
+  
+  <!-- CodeBuild to CloudFront (invalidation) -->
+  <path d="M 560 150 L 560 190 L 520 190 L 520 220" class="arrow"/>
+  <text x="545" y="205" class="flow-text">invalidate</text>
+  
+  <!-- Secrets Manager to CodePipeline -->
+  <path d="M 110 220 L 110 180 L 310 180 L 310 150" class="arrow" stroke-dasharray="5,5"/>
+  <text x="160" y="175" class="flow-text">token</text>
+  
+  <!-- CodeBuild to CloudWatch - MOVED RIGHT to avoid overlap -->
+  <path d="M 540 150 L 540 370" class="arrow" stroke-dasharray="5,5"/>
+  <text x="555" y="260" class="flow-text">logs</text>
+  
+  <!-- IAM to CodeBuild - ADJUSTED path to avoid overlap -->
+  <path d="M 310 370 L 310 340 L 500 340 L 500 150" class="arrow" stroke-dasharray="5,5"/>
+  <text x="330" y="355" class="flow-text">permissions</text>
+  
+  <!-- Legend -->
+  <rect x="50" y="485" width="700" height="125" fill="none" stroke="#AAB7B8" stroke-width="1" rx="5"/>
+  <text x="400" y="515" class="text" text-anchor="middle" font-weight="bold">Deployment Flow:</text>
+  <text x="400" y="545" class="label" text-anchor="middle">1. Developer pushes code to GitHub (main branch)</text>
+  <text x="400" y="568" class="label" text-anchor="middle">2. CodePipeline detects change and triggers CodeBuild</text>
+  <text x="400" y="591" class="label" text-anchor="middle">3. CodeBuild syncs files to S3, invalidates CloudFront cache, logs to CloudWatch</text>
+</svg>
