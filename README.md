@@ -8,7 +8,11 @@ This project hosts a static personal portfolio website on AWS with global CDN de
 
 ## Architecture
 
-![Architecture Diagram](architecture-diagram.svg)
+**Project 2 — Static Hosting:**
+![Static Hosting Architecture](architecture-diagram.svg)
+
+**Project 3 — CI/CD Pipeline:**
+![CI/CD Pipeline Architecture](architecture-diagram-cicd.svg)
 
 ## AWS Services Used
 
@@ -98,7 +102,8 @@ CodeBuild executes these commands on every deployment:
 - GitHub: https://github.com/TonnyPiperDev/aws-static-portfolio
 
 ## Author
+Build while studying for AWS Solutions Architect Associate (SAA-C03) - April 2026
 
 Tonny Piper | https://github.com/TonnyPiperDev
 
-Built while studying for AWS Solutions Architect Associate (SAA-C03) — April 2026
+
